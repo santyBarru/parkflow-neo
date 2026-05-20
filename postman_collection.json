@@ -121,7 +121,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\"licensePlate\":\"TEST999\",\"vehicleType\":\"CAR\",\"spotId\":\"C-03\"}"
+          "raw": "{\"licensePlate\":\"NEWMAN01\",\"vehicleType\":\"CAR\",\"spotId\":\"C-04\"}"
         }
       }
     },
