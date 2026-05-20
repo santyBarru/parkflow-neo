@@ -42,7 +42,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: Ejecutar pruebas
+      - name: Ejecutar pruebas unitarias
         working-directory: Back-end/backend
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/parkflow
@@ -50,9 +50,41 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: postgres
         run: ./mvnw test
 
-      - name: Publicar resultados de pruebas
+      - name: Publicar resultados de pruebas unitarias
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
           path: Back-end/backend/target/surefire-reports/
+
+      - name: Arrancar backend en background
+        working-directory: Back-end/backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/parkflow
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
+        run: ./mvnw spring-boot:run &
+
+      - name: Esperar que el backend arranque
+        run: |
+          echo "Esperando backend..."
+          for i in {1..30}; do
+            curl -s http://localhost:8080/actuator/health && echo "Backend listo!" && break
+            echo "Intento $i/30..."
+            sleep 5
+          done
+
+      - name: Instalar Newman
+        run: npm install -g newman
+
+      - name: Ejecutar pruebas de API con Newman
+        run: |
+          newman run postman_collection.json \
+            --reporters cli
+
+      - name: Publicar resultados Newman
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-results
+          path: newman/
