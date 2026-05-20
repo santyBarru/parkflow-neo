@@ -115,7 +115,7 @@ jobs:
 
       - name: Ejecutar pruebas de GUI con Cypress
         working-directory: parkflow-frontend
-        run: npx cypress run --spec "cypress/e2e/parkflow.cy.js"
+        run: npx cypress run --spec "cypress/e2e/parkflow.cy.js" --browser electron
         continue-on-error: true
 
       - name: Publicar screenshots Cypress
