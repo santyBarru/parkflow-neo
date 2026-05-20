@@ -108,3 +108,19 @@ jobs:
         with:
           name: trivy-report
           path: trivy-results.json
+
+      - name: Instalar dependencias frontend
+        working-directory: parkflow-frontend
+        run: npm install
+
+      - name: Ejecutar pruebas de GUI con Cypress
+        working-directory: parkflow-frontend
+        run: npx cypress run --spec "cypress/e2e/parkflow.cy.js"
+        continue-on-error: true
+
+      - name: Publicar screenshots Cypress
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-screenshots
+          path: parkflow-frontend/cypress/screenshots/
