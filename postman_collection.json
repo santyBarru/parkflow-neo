@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "ParkFlow NEO - API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "authToken", "value": "" },
+    { "key": "ticketId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login exitoso - status 200', function() { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta tiene token', function() { pm.expect(pm.response.json().token).to.be.a('string'); });",
+              "pm.test('Usuario tiene rol ADMIN', function() { pm.expect(pm.response.json().user.role).to.eql('ADMIN'); });",
+              "pm.collectionVariables.set('authToken', pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"admin\",\"password\":\"admin123\"}"
+        }
+      }
+    },
+    {
+      "name": "02 - Login Inválido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login fallido - status 401', function() { pm.response.to.have.status(401); });",
+              "pm.test('No retorna token', function() { pm.expect(pm.response.json().token).to.be.undefined; });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"admin\",\"password\":\"malala\"}"
+        }
+      }
+    },
+    {
+      "name": "03 - Listar Espacios",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', function() { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta tiene lista de spots', function() { pm.expect(pm.response.json().spots).to.be.an('array'); });",
+              "pm.test('Tiempo de respuesta menor a 2000ms', function() { pm.expect(pm.response.responseTime).to.be.below(2000); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": {
+          "raw": "http://localhost:8080/api/spots",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "spots"]
+        }
+      }
+    },
+    {
+      "name": "04 - Registrar Entrada Vehículo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Entrada registrada - status 200', function() { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta tiene ID de ticket', function() { pm.expect(pm.response.json()).to.have.property('id'); });",
+              "pm.test('Estado del ticket es ACTIVE', function() { pm.expect(pm.response.json().status).to.eql('ACTIVE'); });",
+              "pm.collectionVariables.set('ticketId', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/tickets",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "tickets"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"licensePlate\":\"TEST999\",\"vehicleType\":\"CAR\",\"spotId\":\"C-03\"}"
+        }
+      }
+    },
+    {
+      "name": "05 - Registrar Salida Vehículo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Salida registrada - status 200', function() { pm.response.to.have.status(200); });",
+              "pm.test('Ticket fue pagado', function() { pm.expect(pm.response.json().status).to.eql('PAID'); });",
+              "pm.test('Respuesta tiene ticketId', function() { pm.expect(pm.response.json()).to.have.property('ticketId'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": {
+          "raw": "http://localhost:8080/api/tickets/{{ticketId}}/exit",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "tickets", "{{ticketId}}", "exit"]
+        }
+      }
+    },
+    {
+      "name": "06 - Acceso Sin Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Acceso denegado - status 401 o 403', function() { pm.expect(pm.response.code).to.be.oneOf([401,403]); });",
+              "pm.test('No expone datos sensibles', function() { pm.expect(pm.response.text()).to.not.include('password'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/spots",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "spots"]
+        }
+      }
+    }
+  ]
+}
