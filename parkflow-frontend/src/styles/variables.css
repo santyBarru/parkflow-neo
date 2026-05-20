@@ -1,35 +1,65 @@
 :root {
-  --bg-primary: #0a0e27;
-  --bg-secondary: #111936;
-  --bg-card: #1a237e;
-  --bg-input: #0f1535;
-  
-  --primary: #0066ff;
-  --primary-hover: #0052cc;
-  --primary-light: #3385ff;
-  
-  --cyan: #00bcd4;
-  --green: #4caf50;
-  --orange: #ff9800;
-  --red: #f44336;
-  
+  /* Fondos - Negro profundo */
+  --bg-primary: #050508;
+  --bg-secondary: #0a0a0f;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-input: rgba(255, 255, 255, 0.05);
+
+  /* Colores principales - Dorado y Azul eléctrico */
+  --primary: #c9a84c;
+  --primary-hover: #e8c96d;
+  --primary-light: #f0d98a;
+  --accent: #4a9eff;
+  --accent-hover: #6ab4ff;
+
+  /* Gradientes premium */
+  --gradient-gold: linear-gradient(135deg, #c9a84c, #f0d98a, #c9a84c);
+  --gradient-blue: linear-gradient(135deg, #1a3a6e, #4a9eff);
+  --gradient-dark: linear-gradient(135deg, #050508, #0a0a1a);
+  --gradient-card: linear-gradient(
+    135deg,
+    rgba(201, 168, 76, 0.05),
+    rgba(74, 158, 255, 0.05)
+  );
+
+  /* Neón y brillo */
+  --glow-gold:
+    0 0 20px rgba(201, 168, 76, 0.4), 0 0 60px rgba(201, 168, 76, 0.1);
+  --glow-blue:
+    0 0 20px rgba(74, 158, 255, 0.4), 0 0 60px rgba(74, 158, 255, 0.1);
+
+  /* Colores de estado */
+  --cyan: #4a9eff;
+  --green: #2ecc71;
+  --orange: #f39c12;
+  --red: #e74c3c;
+
+  /* Textos */
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  
-  --border: rgba(255, 255, 255, 0.1);
-  --border-focus: rgba(0, 102, 255, 0.5);
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-primary: 0 4px 20px rgba(0, 102, 255, 0.3);
-  
+  --text-muted: #4a5568;
+  --text-gold: #c9a84c;
+
+  /* Bordes glassmorphism */
+  --border: rgba(201, 168, 76, 0.15);
+  --border-focus: rgba(201, 168, 76, 0.5);
+  --border-blue: rgba(74, 158, 255, 0.2);
+
+  /* Sombras premium */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.7);
+  --shadow-gold: 0 4px 20px rgba(201, 168, 76, 0.2);
+  --shadow-blue: 0 4px 20px rgba(74, 158, 255, 0.2);
+
+  /* Radios */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
-  
-  --transition-fast: 150ms ease;
-  --transition-normal: 300ms ease;
+
+  /* Transiciones */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
