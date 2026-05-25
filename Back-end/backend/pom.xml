@@ -24,7 +24,6 @@
                 <java.version>17</java.version>
                 <allure.version>2.24.0</allure.version>
                 <aspectj.version>1.9.20.1</aspectj.version>
-                <jacoco.excludes>**/*MockitoMock*</jacoco.excludes>
         </properties>
 
         <dependencies>
@@ -119,6 +118,14 @@
                                 <version>0.8.12</version>
                                 <configuration>
                                         <excludes>
+                                                <exclude>**/dto/**</exclude>
+                                                <exclude>**/entity/**</exclude>
+                                                <exclude>**/config/**</exclude>
+                                                <exclude>**/exception/**</exclude>
+                                                <exclude>**/gui/**</exclude>
+                                                <exclude>**/factory/**</exclude>
+                                                <exclude>**/controller/**</exclude>
+                                                <exclude>**/repository/**</exclude>
                                                 <exclude>**/*MockitoMock*</exclude>
                                                 <exclude>**/*$*</exclude>
                                         </excludes>
