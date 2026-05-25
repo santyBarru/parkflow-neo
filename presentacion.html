@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NEO ParkFlow — Presentación</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d98a;
+  --blue: #4a9eff;
+  --bg: #050508;
+  --bg2: #0a0a0f;
+  --green: #2ecc71;
+  --red: #e74c3c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.4); border-radius: 2px; }
+
+/* CANVAS THREE.JS */
+#canvas-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* MOUSE GLOW */
+.mouse-glow {
+  position: fixed;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.5) 0%, transparent 100%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  filter: blur(8px);
+  transition: width 0.3s, height 0.3s;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(5,5,8,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 1000;
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 0.9rem;
+  background: linear-gradient(135deg, #c9a84c, #f0d98a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  color: rgba(255,255,255,0.4); text-decoration: none;
+  font-size: 0.8125rem; font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #c9a84c; }
+
+/* PROGRESS BAR */
+#progress {
+  position: fixed;
+  top: 56px; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #c9a84c, #f0d98a);
+  z-index: 1001;
+  transition: width 0.1s;
+  box-shadow: 0 0 10px rgba(201,168,76,0.6);
+}
+
+/* SECTIONS */
+section {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* HERO */
+#hero {
+  background: radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.07) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(74,158,255,0.07) 0%, transparent 50%);
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 1.25rem;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 99px;
+  font-size: 0.6875rem; font-weight: 700;
+  color: rgba(201,168,76,0.8);
+  text-transform: uppercase; letter-spacing: 0.15em;
+  margin-bottom: 2.5rem;
+  animation: fadeDown 1s ease 0.2s both;
+}
+
+.badge-dot {
+  width: 6px; height: 6px;
+  background: #c9a84c; border-radius: 50%;
+  box-shadow: 0 0 8px rgba(201,168,76,0.8);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+
+.hero-logo {
+  width: 110px; height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(201,168,76,0.6));
+  margin-bottom: 2rem;
+  animation: scaleIn 1s cubic-bezier(0.34,1.56,0.64,1) 0.4s both;
+}
+
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(3.5rem, 9vw, 7rem);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #fff 0%, #c9a84c 35%, #f0d98a 50%, #c9a84c 65%, #fff 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeUp 1s ease 0.6s both, shimmer 6s ease infinite;
+}
+
+@keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.1875rem);
+  color: rgba(255,255,255,0.45);
+  text-align: center; max-width: 580px; line-height: 1.7;
+  margin-bottom: 3rem;
+  animation: fadeUp 1s ease 0.8s both;
+}
+
+.hero-stats {
+  display: flex; gap: 0; margin-bottom: 3rem;
+  animation: fadeUp 1s ease 1s both;
+}
+
+.hero-stat { text-align: center; padding: 0 2.5rem; }
+.hero-stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.75rem; font-weight: 800;
+  background: linear-gradient(135deg, #c9a84c, #f0d98a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.6875rem; color: rgba(255,255,255,0.25);
+  text-transform: uppercase; letter-spacing: 0.12em; margin-top: 0.35rem;
+}
+.hero-divider {
+  width: 1px; background: rgba(201,168,76,0.15); align-self: center; height: 40px;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 1rem 2.25rem;
+  background: linear-gradient(135deg, #c9a84c, #e8c96d, #c9a84c);
+  background-size: 200% 200%;
+  color: #050508; font-weight: 800; font-size: 0.9375rem;
+  border: none; border-radius: 14px; cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 25px rgba(201,168,76,0.4);
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  animation: fadeUp 1s ease 1.2s both, shimmer 3s ease infinite;
+  letter-spacing: 0.02em;
+}
+.btn-primary:hover { transform: translateY(-4px); box-shadow: 0 10px 40px rgba(201,168,76,0.6); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 1rem 2.25rem;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.7); font-weight: 600; font-size: 0.9375rem;
+  border: 1px solid rgba(201,168,76,0.2); border-radius: 14px;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn-secondary:hover { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.4); transform: translateY(-2px); }
+
+/* SECTION LABELS */
+.sec-label {
+  font-size: 0.6875rem; font-weight: 700;
+  color: rgba(201,168,76,0.5);
+  text-transform: uppercase; letter-spacing: 0.2em;
+  margin-bottom: 1rem; text-align: center;
+}
+.sec-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800; text-align: center;
+  letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.1;
+}
+.sec-desc {
+  font-size: 1.0625rem; color: rgba(255,255,255,0.4);
+  text-align: center; max-width: 580px; line-height: 1.7; margin-bottom: 4rem;
+}
+
+/* FADE ANIMATIONS */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* SETUP SECTION */
+#setup { background: radial-gradient(ellipse at 50% 0%, rgba(74,158,255,0.05) 0%, transparent 60%); }
+
+.setup-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  width: 100%; max-width: 900px;
+}
+
+/* TERMINAL */
+.terminal {
+  background: rgba(5,5,8,0.95);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.term-header {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(201,168,76,0.06);
+}
+.term-dot { width: 12px; height: 12px; border-radius: 50%; }
+.term-dot.r { background: #ff5f57; }
+.term-dot.y { background: #febc2e; }
+.term-dot.g { background: #28c840; }
+.term-title { font-family: 'JetBrains Mono', monospace; font-size: 0.6875rem; color: rgba(255,255,255,0.25); margin-left: 0.5rem; }
+.term-body { padding: 1.25rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; line-height: 2; }
+.term-line { display: flex; align-items: center; gap: 0.75rem; }
+.term-prompt { color: #c9a84c; flex-shrink: 0; }
+.term-cmd { color: #fff; flex: 1; }
+.term-out { color: #2ecc71; font-size: 0.75rem; padding-left: 1.5rem; }
+.term-comment { color: rgba(255,255,255,0.2); font-size: 0.75rem; }
+.copy-btn {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 6px; color: rgba(201,168,76,0.6);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.625rem;
+  padding: 0.2rem 0.5rem; cursor: pointer;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.copy-btn:hover { background: rgba(201,168,76,0.15); color: #c9a84c; }
+.copy-btn.copied { color: #2ecc71; border-color: rgba(46,204,113,0.3); }
+
+/* SETUP CARD */
+.setup-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 16px; padding: 1.5rem;
+  position: relative; overflow: hidden;
+}
+.setup-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+}
+.setup-card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9375rem; font-weight: 700;
+  margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.setup-step {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.8125rem;
+}
+.setup-step:last-child { border-bottom: none; }
+.setup-num {
+  width: 20px; height: 20px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.625rem; font-weight: 700; color: #c9a84c; flex-shrink: 0;
+}
+.setup-text { color: rgba(255,255,255,0.6); }
+.setup-badge {
+  margin-left: auto; padding: 0.125rem 0.5rem;
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.2);
+  border-radius: 99px; font-size: 0.5625rem;
+  font-weight: 700; color: #2ecc71;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+/* CARDS GRID */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem; width: 100%; max-width: 1100px;
+}
+.card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 16px; padding: 1.75rem;
+  position: relative; overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+}
+.card:hover {
+  border-color: rgba(201,168,76,0.3);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.1);
+}
+.card-icon {
+  font-size: 1.75rem; margin-bottom: 1rem;
+  width: 50px; height: 50px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease;
+}
+.card:hover .card-icon { transform: scale(1.15) rotate(-5deg); }
+.card-icon.gold { background: rgba(201,168,76,0.1); }
+.card-icon.blue { background: rgba(74,158,255,0.1); }
+.card-icon.green { background: rgba(46,204,113,0.1); }
+.card-icon.red { background: rgba(231,76,60,0.1); }
+.card-icon.purple { background: rgba(155,89,182,0.1); }
+
+.card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.card-desc { font-size: 0.8125rem; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 1rem; }
+.card-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(46,204,113,0.08);
+  border: 1px solid rgba(46,204,113,0.2);
+  border-radius: 99px; font-size: 0.625rem; font-weight: 700;
+  color: #2ecc71; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 0.875rem;
+}
+.card-badge::before {
+  content: ''; width: 5px; height: 5px;
+  background: #2ecc71; border-radius: 50%;
+  box-shadow: 0 0 6px rgba(46,204,113,0.8);
+}
+
+/* PIPELINE */
+.pipeline-wrap {
+  width: 100%; max-width: 1000px;
+  background: rgba(255,255,255,0.01);
+  border: 1px solid rgba(201,168,76,0.08);
+  border-radius: 20px; padding: 2.5rem;
+  position: relative; overflow: hidden;
+}
+.pipeline-wrap::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+}
+.pipeline {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap;
+}
+.pip-step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 0.875rem;
+}
+.pip-icon {
+  width: 54px; height: 54px; border-radius: 15px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,168,76,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.375rem; position: relative;
+  transition: all 0.3s ease;
+}
+.pip-icon.ok {
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.3);
+  box-shadow: 0 0 20px rgba(201,168,76,0.15);
+}
+.pip-icon.ok::after {
+  content: '✓';
+  position: absolute; top: -6px; right: -6px;
+  width: 17px; height: 17px;
+  background: #2ecc71; border-radius: 50%;
+  font-size: 0.5625rem; display: flex;
+  align-items: center; justify-content: center;
+  color: #fff; font-weight: 800;
+}
+.pip-label { font-size: 0.5625rem; color: rgba(255,255,255,0.3); text-align: center; max-width: 65px; line-height: 1.4; }
+.pip-arrow { color: rgba(201,168,76,0.25); font-size: 1rem; padding-bottom: 1.25rem; }
+
+.pipeline-status {
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  margin-top: 2rem; padding-top: 2rem;
+  border-top: 1px solid rgba(201,168,76,0.06);
+}
+.status-dot {
+  width: 8px; height: 8px; background: #2ecc71; border-radius: 50%;
+  box-shadow: 0 0 10px rgba(46,204,113,0.8);
+  animation: pulse 2s ease-in-out infinite;
+}
+.status-text { font-size: 0.8125rem; color: rgba(255,255,255,0.4); }
+.status-text strong { color: #2ecc71; }
+
+/* DEVSECOPS */
+.devsec-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;
+  width: 100%; max-width: 800px;
+}
+
+/* ARQUITECTURA */
+.arch-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  width: 100%; max-width: 900px; margin-bottom: 2rem;
+}
+.arch-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 14px; padding: 1.25rem;
+  text-align: center; transition: all 0.3s ease;
+}
+.arch-card:hover { border-color: rgba(201,168,76,0.25); transform: translateY(-3px); }
+.arch-card-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+.arch-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.875rem; font-weight: 700; margin-bottom: 0.4rem; }
+.arch-card-tech { font-size: 0.75rem; color: rgba(201,168,76,0.6); font-family: 'JetBrains Mono', monospace; }
+
+/* METRICS */
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
+  width: 100%; max-width: 900px; margin-bottom: 3rem;
+}
+.metric {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 16px; padding: 1.75rem 1rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.metric::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.6), transparent);
+}
+.metric-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.75rem; font-weight: 800;
+  background: linear-gradient(135deg, #c9a84c, #f0d98a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1; margin-bottom: 0.5rem;
+}
+.metric-label { font-size: 0.6875rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* DEMO SECTION */
+#demo { background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 60%); }
+
+.demo-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  width: 100%; max-width: 900px;
+}
+
+/* FOOTER */
+footer {
+  padding: 3rem 2rem; text-align: center;
+  border-top: 1px solid rgba(201,168,76,0.06);
+  color: rgba(255,255,255,0.15); font-size: 0.8125rem;
+  position: relative; z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+<div class="mouse-glow" id="glow"></div>
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="parkflow-frontend/src/images/Parkflow.png" alt="NP"/>
+    NEO ParkFlow
+  </div>
+  <ul class="nav-links">
+    <li><a href="#hero">Inicio</a></li>
+    <li><a href="#setup">Setup</a></li>
+    <li><a href="#pruebas">Pruebas</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#devsecops">DevSecOps</a></li>
+    <li><a href="#demo">Demo</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge"><div class="badge-dot"></div>Universidad de La Sabana — Diseño y Arquitectura de Software</div>
+  <img src="parkflow-frontend/src/images/Parkflow.png" alt="NEO ParkFlow" class="hero-logo"/>
+  <h1 class="hero-title">NEO ParkFlow</h1>
+  <p class="hero-subtitle">Sistema de gestión de parqueadero universitario con pruebas automatizadas, pipeline CI/CD y DevSecOps integrado desde el primer commit.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num" data-target="15">0</div><div class="hero-stat-label">Pruebas unitarias</div></div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat"><div class="hero-stat-num" data-target="16">0</div><div class="hero-stat-label">Pruebas API</div></div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat"><div class="hero-stat-num" data-target="2588">0</div><div class="hero-stat-label">Checks de carga</div></div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-label">Pasando</div></div>
+  </div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+    <a href="#setup" class="btn-primary">Comenzar demo ↓</a>
+    <a href="https://github.com/santyBarru/parkflow-neo" target="_blank" class="btn-secondary">Ver repositorio →</a>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+  <p class="sec-label reveal">Paso 0 — Antes de empezar</p>
+  <h2 class="sec-title reveal reveal-delay-1">Levantar el sistema</h2>
+  <p class="sec-desc reveal reveal-delay-2">Todo corre localmente. Abre dos terminales y ejecuta estos comandos.</p>
+
+  <div class="setup-grid reveal reveal-delay-2">
+    <div class="terminal">
+      <div class="term-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <span class="term-title">Terminal 1 — Backend</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">Agregar PostgreSQL al PATH</span></div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">$env:PATH += ";C:\Program Files\PostgreSQL\17\bin"</span>
+          <button class="copy-btn" onclick="copyCmd(this,'$env:PATH += \";C:\\Program Files\\PostgreSQL\\17\\bin\"')">copy</button>
+        </div>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">Ir al backend</span></div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">cd Back-end/backend</span>
+          <button class="copy-btn" onclick="copyCmd(this,'cd Back-end/backend')">copy</button>
+        </div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">./mvnw spring-boot:run</span>
+          <button class="copy-btn" onclick="copyCmd(this,'./mvnw spring-boot:run')">copy</button>
+        </div>
+        <div class="term-out">→ Started on port 8080 ✓</div>
+        <div class="term-out">→ http://localhost:8080/actuator/health</div>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="term-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <span class="term-title">Terminal 2 — Frontend</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">Ir al frontend</span></div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">cd parkflow-frontend</span>
+          <button class="copy-btn" onclick="copyCmd(this,'cd parkflow-frontend')">copy</button>
+        </div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">npm run dev</span>
+          <button class="copy-btn" onclick="copyCmd(this,'npm run dev')">copy</button>
+        </div>
+        <div class="term-out">→ Local: http://localhost:3000 ✓</div>
+        <br/>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">Credenciales de prueba</span></div>
+        <div class="term-line">
+          <span class="term-prompt">→</span>
+          <span class="term-cmd">admin / admin123</span>
+          <button class="copy-btn" onclick="copyCmd(this,'admin123')">copy</button>
+        </div>
+        <div class="term-line">
+          <span class="term-prompt">→</span>
+          <span class="term-cmd">celador / 1234</span>
+          <button class="copy-btn" onclick="copyCmd(this,'1234')">copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-card">
+      <div class="setup-card-title">🏗️ Arquitectura del sistema</div>
+      <div class="setup-step">
+        <div class="setup-num">1</div>
+        <div class="setup-text">Spring Boot 3.5 — API REST en puerto 8080</div>
+        <div class="setup-badge">Java</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">2</div>
+        <div class="setup-text">TypeScript + Vite — Frontend en puerto 3000</div>
+        <div class="setup-badge">TS</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">3</div>
+        <div class="setup-text">PostgreSQL 17 — Base de datos local</div>
+        <div class="setup-badge">SQL</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">4</div>
+        <div class="setup-text">JWT + BCrypt — Autenticación segura</div>
+        <div class="setup-badge">Auth</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">5</div>
+        <div class="setup-text">Docker Compose — Contenedorización</div>
+        <div class="setup-badge">Docker</div>
+      </div>
+    </div>
+
+    <div class="setup-card">
+      <div class="setup-card-title">🐳 Con Docker (opcional)</div>
+      <div class="term-body" style="padding:0;font-family:'JetBrains Mono',monospace;font-size:0.8125rem;line-height:2;">
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">Levantar todo con un comando</span></div>
+        <div class="term-line">
+          <span class="term-prompt">$</span>
+          <span class="term-cmd">docker-compose up --build</span>
+          <button class="copy-btn" onclick="copyCmd(this,'docker-compose up --build')">copy</button>
+        </div>
+        <div class="term-out">→ Backend: localhost:8080</div>
+        <div class="term-out">→ Frontend: localhost:3000</div>
+        <div class="term-out">→ PostgreSQL: localhost:5432</div>
+        <div class="term-out">→ Prometheus: localhost:9090</div>
+        <div class="term-out">→ Grafana: localhost:3001</div>
+      </div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.04);">
+        <a href="https://github.com/santyBarru/parkflow-neo/actions" target="_blank" class="btn-primary" style="font-size:0.8125rem;padding:0.625rem 1.25rem;">
+          Ver Docker en pipeline →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRUEBAS -->
+<section id="pruebas">
+  <p class="sec-label reveal">Calidad de Software</p>
+  <h2 class="sec-title reveal reveal-delay-1">Pruebas Automatizadas</h2>
+  <p class="sec-desc reveal reveal-delay-2">5 tipos de pruebas — todas integradas al pipeline y corriendo en cada commit.</p>
+
+  <div class="cards-grid reveal reveal-delay-2">
+    <div class="card">
+      <div class="card-icon gold">🧪</div>
+      <div class="card-title">JUnit 5 + Mockito</div>
+      <div class="card-desc">15 pruebas verificando JWT, tarifas por hora y lógica del parqueadero con mocks.</div>
+      <div class="card-badge">15 passing</div>
+      <div class="terminal">
+        <div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div><span class="term-title">bash</span></div>
+        <div class="term-body" style="padding:0.875rem 1rem;">
+          <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">cd Back-end/backend && ./mvnw test</span><button class="copy-btn" onclick="copyCmd(this,'cd Back-end/backend && ./mvnw test')">copy</button></div>
+          <div class="term-out">✓ Tests run: 15, Failures: 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon blue">🌐</div>
+      <div class="card-title">Postman + Newman</div>
+      <div class="card-desc">16 assertions sobre login, spots, tickets y seguridad sin token.</div>
+      <div class="card-badge">16 assertions</div>
+      <div class="terminal">
+        <div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div><span class="term-title">bash</span></div>
+        <div class="term-body" style="padding:0.875rem 1rem;">
+          <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">newman run postman_collection.json</span><button class="copy-btn" onclick="copyCmd(this,'newman run postman_collection.json')">copy</button></div>
+          <div class="term-out">✓ assertions: 16, failed: 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon green">⚡</div>
+      <div class="card-title">k6 — Pruebas de Carga</div>
+      <div class="card-desc">20 usuarios simultáneos, 70 segundos. 2588 checks, promedio 27ms, 0% fallos.</div>
+      <div class="card-badge">2588 checks</div>
+      <div class="terminal">
+        <div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div><span class="term-title">bash</span></div>
+        <div class="term-body" style="padding:0.875rem 1rem;">
+          <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">k6 run k6-load-test.js</span><button class="copy-btn" onclick="copyCmd(this,'k6 run k6-load-test.js')">copy</button></div>
+          <div class="term-out">✓ rate=0.00% p(95)=72ms</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon purple">🖥️</div>
+      <div class="card-title">Cypress — GUI</div>
+      <div class="card-desc">Robot que abre el navegador y prueba el login — carga, credenciales incorrectas y éxito.</div>
+      <div class="card-badge">3 passing</div>
+      <div class="terminal">
+        <div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div><span class="term-title">bash</span></div>
+        <div class="term-body" style="padding:0.875rem 1rem;">
+          <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">cd parkflow-frontend && npx cypress run</span><button class="copy-btn" onclick="copyCmd(this,'cd parkflow-frontend && npx cypress run --spec cypress/e2e/parkflow.cy.js')">copy</button></div>
+          <div class="term-out">✓ All specs passed!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon gold">📊</div>
+      <div class="card-title">Allure Report</div>
+      <div class="card-desc">Reporte visual con gráficas, timeline y detalle de cada prueba. 15 test cases, 100% verde.</div>
+      <div class="card-badge">100% verde</div>
+      <div class="terminal">
+        <div class="term-header"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div><span class="term-title">bash</span></div>
+        <div class="term-body" style="padding:0.875rem 1rem;">
+          <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">cd Back-end/backend && ./mvnw allure:serve</span><button class="copy-btn" onclick="copyCmd(this,'cd Back-end/backend && ./mvnw allure:serve')">copy</button></div>
+          <div class="term-out">✓ 15 test cases 100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline" style="background:radial-gradient(ellipse at 50% 50%, rgba(74,158,255,0.04) 0%, transparent 60%);">
+  <p class="sec-label reveal">Automatización</p>
+  <h2 class="sec-title reveal reveal-delay-1">Pipeline CI/CD</h2>
+  <p class="sec-desc reveal reveal-delay-2">Cada <code style="color:#c9a84c;font-family:'JetBrains Mono',monospace;">git push</code> activa automáticamente 9 pasos en GitHub Actions — sin intervención manual.</p>
+
+  <div class="pipeline-wrap reveal reveal-delay-2">
+    <div class="pipeline">
+      <div class="pip-step"><div class="pip-icon ok">📦</div><div class="pip-label">Checkout código</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">☕</div><div class="pip-label">Setup Java 17</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🧪</div><div class="pip-label">JUnit Tests</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🚀</div><div class="pip-label">Arrancar backend</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🌐</div><div class="pip-label">Newman API</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🖥️</div><div class="pip-label">Cypress GUI</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🔍</div><div class="pip-label">Gitleaks</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">🛡️</div><div class="pip-label">Trivy + OWASP</div></div>
+      <div class="pip-arrow">→</div>
+      <div class="pip-step"><div class="pip-icon ok">✅</div><div class="pip-label">Build exitoso</div></div>
+    </div>
+    <div class="pipeline-status">
+      <div class="status-dot"></div>
+      <div class="status-text">Último build: <strong>SUCCESS</strong> — todos los checks pasaron</div>
+      <a href="https://github.com/santyBarru/parkflow-neo/actions" target="_blank" class="btn-primary" style="font-size:0.8125rem;padding:0.5rem 1.25rem;margin-left:1rem;">Ver en vivo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- DEVSECOPS -->
+<section id="devsecops">
+  <p class="sec-label reveal">Seguridad integrada</p>
+  <h2 class="sec-title reveal reveal-delay-1">DevSecOps</h2>
+  <p class="sec-desc reveal reveal-delay-2">Seguridad no es un paso final — está integrada desde el primer commit.</p>
+
+  <div class="devsec-grid reveal reveal-delay-2">
+    <div class="card">
+      <div class="card-icon red">🔑</div>
+      <div class="card-title">Gitleaks — Secrets Scanning</div>
+      <div class="card-desc">Escanea cada commit buscando tokens, contraseñas y secretos expuestos accidentalmente en el código.</div>
+      <div class="card-badge">En pipeline</div>
+    </div>
+    <div class="card">
+      <div class="card-icon blue">🔬</div>
+      <div class="card-title">Trivy — Container Scanning</div>
+      <div class="card-desc">Escanea el sistema de archivos y las imágenes Docker buscando CVEs y vulnerabilidades conocidas.</div>
+      <div class="card-badge">En pipeline</div>
+    </div>
+    <div class="card">
+      <div class="card-icon gold">⚡</div>
+      <div class="card-title">Semgrep — SAST</div>
+      <div class="card-desc">Análisis estático del código fuente buscando patrones inseguros del OWASP Top 10.</div>
+      <div class="card-badge">En pipeline</div>
+    </div>
+    <div class="card">
+      <div class="card-icon green">🛡️</div>
+      <div class="card-title">OWASP + JWT + BCrypt</div>
+      <div class="card-desc">Dependency check de librerías, autenticación con tokens firmados HS256 y contraseñas hasheadas.</div>
+      <div class="card-badge">Activo</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo">
+  <p class="sec-label reveal">En vivo</p>
+  <h2 class="sec-title reveal reveal-delay-1">Demo del Sistema</h2>
+  <p class="sec-desc reveal reveal-delay-2">NEO ParkFlow corriendo en tiempo real. Abre la app y prueba cada flujo.</p>
+
+  <div class="demo-grid reveal reveal-delay-2">
+    <div class="terminal">
+      <div class="term-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <span class="term-title">Flujo completo del sistema</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">1. Login como admin</span></div>
+        <div class="term-line"><span class="term-prompt">→</span><span class="term-cmd">http://localhost:3000 → admin / admin123</span><button class="copy-btn" onclick="copyCmd(this,'admin123')">copy</button></div>
+        <br/>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">2. Ver panel administrativo</span></div>
+        <div class="term-line"><span class="term-prompt">→</span><span class="term-cmd">Panel Admin → Estado del parqueadero</span></div>
+        <br/>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">3. Login como celador</span></div>
+        <div class="term-line"><span class="term-prompt">→</span><span class="term-cmd">cela / celador1234</span><button class="copy-btn" onclick="copyCmd(this,'celador1234')">copy</button></div>
+        <br/>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">4. Registrar entrada de vehículo</span></div>
+        <div class="term-line"><span class="term-prompt">→</span><span class="term-cmd">Registrar Entrada → placa → spot</span></div>
+        <br/>
+        <div class="term-line"><span class="term-prompt">#</span><span class="term-cmd term-comment">5. Verificar health check</span></div>
+        <div class="term-line"><span class="term-prompt">→</span><span class="term-cmd">http://localhost:8080/actuator/health</span><button class="copy-btn" onclick="copyCmd(this,'http://localhost:8080/actuator/health')">copy</button></div>
+        <div class="term-out">✓ {"status":"UP"}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+      <div class="setup-card">
+        <div class="setup-card-title">🔗 Links importantes</div>
+        <div class="setup-step">
+          <div class="setup-num">→</div>
+          <div class="setup-text">App en vivo</div>
+          <a href="http://localhost:3000" target="_blank" class="setup-badge" style="text-decoration:none;color:#c9a84c;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);">localhost:3000</a>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">→</div>
+          <div class="setup-text">API Health</div>
+          <a href="http://localhost:8080/actuator/health" target="_blank" class="setup-badge" style="text-decoration:none;color:#c9a84c;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);">:8080/health</a>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">→</div>
+          <div class="setup-text">Repositorio GitHub</div>
+          <a href="https://github.com/santyBarru/parkflow-neo" target="_blank" class="setup-badge" style="text-decoration:none;color:#c9a84c;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);">GitHub</a>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">→</div>
+          <div class="setup-text">Pipeline CI/CD</div>
+          <a href="https://github.com/santyBarru/parkflow-neo/actions" target="_blank" class="setup-badge" style="text-decoration:none;color:#c9a84c;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);">Actions</a>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">→</div>
+          <div class="setup-text">Wiki C4 y 4+1</div>
+          <a href="https://github.com/santyBarru/parkflow-neo/wiki" target="_blank" class="setup-badge" style="text-decoration:none;color:#c9a84c;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);">Wiki</a>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-card-title">👤 Credenciales del sistema</div>
+        <div class="setup-step">
+          <div class="setup-num">A</div>
+          <div class="setup-text"><strong>admin</strong> / admin123</div>
+          <div class="setup-badge">ADMIN</div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">C</div>
+          <div class="setup-text"><strong>cela</strong> / celador1234</div>
+          <div class="setup-badge">CELADOR</div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-num">U</div>
+          <div class="setup-text"><strong>santiago</strong> / luna1234</div>
+          <div class="setup-badge">USER</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section id="cierre" style="background:radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 60%);">
+  <p class="sec-label reveal">Resultados finales</p>
+  <h2 class="sec-title reveal reveal-delay-1">Lo que construimos</h2>
+  <p class="sec-desc reveal reveal-delay-2">Un sistema con las mismas prácticas que usan empresas como Uber, Netflix y Rappi.</p>
+
+  <div class="metrics-grid reveal reveal-delay-2">
+    <div class="metric"><div class="metric-num" data-target="34">0</div><div class="metric-label">Pruebas totales</div></div>
+    <div class="metric"><div class="metric-num">100%</div><div class="metric-label">Pasando</div></div>
+    <div class="metric"><div class="metric-num" data-target="9">0</div><div class="metric-label">Pasos CI/CD</div></div>
+    <div class="metric"><div class="metric-num" data-target="4">0</div><div class="metric-label">Tools DevSecOps</div></div>
+  </div>
+
+  <div class="reveal" style="text-align:center;">
+    <p style="color:rgba(255,255,255,0.2);font-size:0.8125rem;margin-bottom:1.5rem;">Santiago Barrera — Universidad de La Sabana — 2026</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/santyBarru/parkflow-neo" target="_blank" class="btn-primary">github.com/santyBarru/parkflow-neo →</a>
+      <a href="http://localhost:3000" target="_blank" class="btn-secondary">Abrir app →</a>
+    </div>
+  </div>
+</section>
+
+<footer>NEO ParkFlow · Diseño y Arquitectura de Software · Prof. César Augusto Vega Fernández · 2026</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════ THREE.JS PARTICLES ═══════════════
+const canvas = document.getElementById('canvas-bg');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
+
+// Partículas
+const count = 2000;
+const geo = new THREE.BufferGeometry();
+const pos = new Float32Array(count * 3);
+const colors = new Float32Array(count * 3);
+
+for(let i = 0; i < count; i++) {
+  pos[i*3] = (Math.random()-0.5)*20;
+  pos[i*3+1] = (Math.random()-0.5)*20;
+  pos[i*3+2] = (Math.random()-0.5)*20;
+  const isGold = Math.random() > 0.6;
+  if(isGold) {
+    colors[i*3] = 0.788; colors[i*3+1] = 0.659; colors[i*3+2] = 0.298;
+  } else {
+    colors[i*3] = 0.29; colors[i*3+1] = 0.62; colors[i*3+2] = 1.0;
+  }
+}
+
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+const mat = new THREE.PointsMaterial({
+  size: 0.025, vertexColors: true, transparent: true, opacity: 0.6,
+  sizeAttenuation: true
+});
+
+const particles = new THREE.Points(geo, mat);
+scene.add(particles);
+
+// Líneas de conexión sutiles
+const lineGeo = new THREE.BufferGeometry();
+const linePos = [];
+for(let i = 0; i < 80; i++) {
+  const x1 = (Math.random()-0.5)*15, y1 = (Math.random()-0.5)*15, z1 = (Math.random()-0.5)*10;
+  const x2 = x1+(Math.random()-0.5)*3, y2 = y1+(Math.random()-0.5)*3, z2 = z1+(Math.random()-0.5)*3;
+  linePos.push(x1,y1,z1, x2,y2,z2);
+}
+lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePos), 3));
+const lineMat = new THREE.LineBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.05 });
+const lines = new THREE.LineSegments(lineGeo, lineMat);
+scene.add(lines);
+
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', e => {
+  mouseX = (e.clientX/window.innerWidth - 0.5) * 0.5;
+  mouseY = (e.clientY/window.innerHeight - 0.5) * 0.5;
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  particles.rotation.y += 0.0003;
+  particles.rotation.x += 0.0001;
+  lines.rotation.y += 0.0002;
+  camera.position.x += (mouseX - camera.position.x) * 0.02;
+  camera.position.y += (-mouseY - camera.position.y) * 0.02;
+  camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ═══════════════ MOUSE GLOW ═══════════════
+const glow = document.getElementById('glow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top = e.clientY + 'px';
+});
+
+// ═══════════════ PROGRESS BAR ═══════════════
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  progress.style.width = pct + '%';
+});
+
+// ═══════════════ REVEAL ON SCROLL ═══════════════
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ═══════════════ COUNTER ANIMATION ═══════════════
+function animateCounter(el, target, duration=2000) {
+  let start = 0;
+  const step = target/duration*16;
+  const timer = setInterval(() => {
+    start += step;
+    if(start >= target) { el.textContent = target.toLocaleString(); clearInterval(timer); return; }
+    el.textContent = Math.floor(start).toLocaleString();
+  }, 16);
+}
+
+const counterObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      const target = parseInt(e.target.dataset.target);
+      if(target) animateCounter(e.target, target);
+      counterObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => counterObs.observe(el));
+
+// ═══════════════ COPY COMMAND ═══════════════
+function copyCmd(btn, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = '✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
